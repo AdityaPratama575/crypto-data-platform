@@ -1,0 +1,81 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual env
+.venv/
+venv/
+env/
+
+# Environment
+.env
+.env.*
+!.env.example
+!.env.docker
+
+# Testing / cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Airflow
+airflow.db
+airflow-webserver.pid
+airflow.cfg
+standalone_admin_password.txt
+
+# Data artifacts
+data/raw/
+data/processed/
+!data/sample/
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Docker
+*.tar
+
+# Secrets / keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+
+# Local env manager
+.envrc
+.direnv/
+
+# Local DB artifacts
+*.sqlite
+*.sqlite3
+*.db
+
+# Local Codex config (opsional agar config pribadi tidak ikut ke repo)
+.codex/
+
+# Internal AI workflow docs (tidak untuk repo publik)
+agents.md
+docs/codex_prompt.md

@@ -1,0 +1,10 @@
+requests
+python-dotenv
+PyYAML
+pydantic
+SQLAlchemy
+PyMySQL
+tenacity
+pandas
+pytest
+cryptography
