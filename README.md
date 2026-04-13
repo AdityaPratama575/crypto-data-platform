@@ -1,29 +1,29 @@
 # Crypto Data Platform
 
-Proyek portfolio data engineering berbasis batch yang mengambil data market cryptocurrency dari CoinGecko Demo API ke MySQL lokal menggunakan Python dan Airflow.
+A batch-oriented data engineering portfolio project that ingests cryptocurrency market data from the CoinGecko Demo API into local MySQL using Python and Airflow.
 
-Fokus utama repository ini adalah pipeline design, data modeling, observability, dan local development yang rapi dan reproducible.
-
----
-
-## 1. Tujuan Proyek
-
-Tujuan proyek ini adalah menunjukkan kemampuan data engineering praktis melalui pipeline end-to-end bergaya ETL/ELT batch.
-
-Kemampuan inti yang ingin ditunjukkan:
-- extract data dari external API
-- orchestration dengan Airflow
-- simpan data mentah dan terstruktur ke layered MySQL databases
-- preserve raw payload untuk replay/debugging
-- implement basic data quality checks
-- hasilkan mart tables yang siap dianalisis
-- jaga local development tetap aman dan reproducible
-
-Repository ini sengaja **tidak** memasukkan dashboard di v1.
+This repository focuses on pipeline design, data modeling, observability, and clean, reproducible local development.
 
 ---
 
-## 2. Ringkasan Arsitektur
+## 1. Project Goals
+
+The goal of this project is to demonstrate practical data engineering skills through an end-to-end ETL/ELT-style batch pipeline.
+
+Core capabilities demonstrated:
+- extracting data from an external API
+- orchestrating workflows with Airflow
+- storing both raw and structured data in layered MySQL databases
+- preserving raw payloads for replay and debugging
+- implementing basic data quality checks
+- producing analytics-ready mart tables
+- keeping local development secure and reproducible
+
+This repository intentionally does **not** include a dashboard in v1.
+
+---
+
+## 2. Architecture Summary
 
 ```text
 CoinGecko Demo API
@@ -41,7 +41,7 @@ MySQL crypto_mart
 MySQL crypto_ops
 ```
 
-Airflow mengorkestrasi job ingestion dan transformasi utama.
+Airflow orchestrates the main ingestion and transformation jobs.
 
 ---
 
@@ -55,15 +55,15 @@ Airflow mengorkestrasi job ingestion dan transformasi utama.
 - dotenv / environment variables
 - Pytest
 
-Optional local development acceleration:
+Optional local development tools:
 - VS Code
 - MySQL client (CLI/Workbench/DBeaver)
 
 ---
 
-## 4. Scope Proyek
+## 4. Project Scope
 
-### Masuk scope v1
+### In scope for v1
 - CoinGecko Demo API ingestion
 - raw JSON landing zone
 - raw/core/mart/ops database layers
@@ -73,8 +73,8 @@ Optional local development acceleration:
 - operational logging
 - local development setup
 
-### Di luar scope v1
-- dashboard BI
+### Out of scope for v1
+- BI dashboard
 - dbt
 - cloud warehouse
 - Kafka / streaming
@@ -82,27 +82,27 @@ Optional local development acceleration:
 
 ---
 
-## 5. Domain Data Utama
+## 5. Core Data Domains
 
 ### Reference data
-- daftar/master coin
+- coin master/reference list
 
 ### Snapshot data
-- harga saat ini
+- current price
 - market cap
 - market rank
 - volume
-- perubahan harga
+- price change
 
 ### Historical data
-- time series untuk tracked coins
+- time series for tracked coins
 
 ### Global market data
-- ringkasan market crypto secara keseluruhan
+- overall crypto market summary
 
 ---
 
-## 6. Struktur Repository
+## 6. Repository Structure
 
 ```text
 crypto-data-platform/
@@ -232,9 +232,9 @@ crypto-data-platform/
 
 ## 7. Environment Variables
 
-Buat file `.env` lokal dari `.env.example`.
+Create a local `.env` file from `.env.example`.
 
-Contoh:
+Example:
 
 ```env
 COINGECKO_API_KEY=your_demo_api_key_here
@@ -251,14 +251,14 @@ REQUEST_TIMEOUT_SECONDS=30
 MAX_RETRIES=3
 BACKOFF_SECONDS=2
 
-# Optional tuning khusus coin_history_daily_dag
+# Optional tuning for coin_history_daily_dag
 COIN_HISTORY_BATCH_SIZE=10
 COIN_HISTORY_REQUEST_PAUSE_SECONDS=1.5
 COIN_HISTORY_BATCH_PAUSE_SECONDS=8.0
 COIN_HISTORY_MAX_RETRIES=6
 COIN_HISTORY_BACKOFF_SECONDS=4
 
-# Optional retention policy mart
+# Optional mart retention policy
 MART_RETENTION_ENABLED=false
 MART_TOP_COINS_RETENTION_DAYS=90
 MART_MARKET_SUMMARY_RETENTION_DAYS=0
@@ -285,21 +285,21 @@ AIRFLOW__CORE__EXECUTOR=LocalExecutor
 AIRFLOW__WEBSERVER__EXPOSE_CONFIG=False
 ```
 
-Rule penting:
-- jangan commit `.env`
-- jangan hardcode secret di Python files
-- jangan taruh secret di docs
-- `.env.example` hanya berisi placeholder
+Important rules:
+- do not commit `.env`
+- do not hardcode secrets in Python files
+- do not put secrets in documentation
+- keep `.env.example` as placeholders only
 
-Untuk runtime Airflow di Docker:
-- gunakan `.env` sebagai base config
-- gunakan `.env.docker` sebagai override container
+For Airflow runtime in Docker:
+- use `.env` as the base config
+- use `.env.docker` as container override
   - `MYSQL_HOST=host.docker.internal`
-  - `AIRFLOW_UID=1000` (hindari masalah permission volume mount logs)
+  - `AIRFLOW_UID=1000` (to avoid volume mount permission issues)
 
 ---
 
-## 8. Setup Lokal
+## 8. Local Setup
 
 ### 8.1 Clone repository
 ```bash
@@ -307,7 +307,7 @@ git clone <your-repo-url>
 cd crypto-data-platform
 ```
 
-### 8.2 Buat virtual environment
+### 8.2 Create virtual environment
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
@@ -318,42 +318,42 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 8.4 Tambahan dependency untuk MySQL 8 auth
-Repository ini memakai `cryptography` karena MySQL 8 modern auth methods membutuhkannya.
+### 8.4 Extra dependency for MySQL 8 auth
+This repository uses `cryptography` because modern MySQL 8 auth methods require it.
 
-### 8.5 Buat `.env`
-Copy `.env.example` menjadi `.env`, lalu isi nilainya sesuai local setup.
+### 8.5 Create `.env`
+Copy `.env.example` to `.env`, then fill in values based on your local setup.
 
-### 8.6 Inisialisasi database project
+### 8.6 Initialize project databases
 ```bash
 python3 scripts/init_db.py
 ```
 
-### 8.7 Smoke test konektivitas dasar
+### 8.7 Run basic connectivity smoke test
 ```bash
 python3 scripts/smoke_test.py
 ```
 
-### 8.8 Jalankan ingestion lokal tanpa Airflow (fase awal v1)
+### 8.8 Run local ingestion without Airflow (early v1 phase)
 ```bash
-# Flow coin list saja
+# Coin list flow only
 python3 scripts/run_local_extract.py --flow coin_list
 
-# Flow coin markets top 100 saja
+# Coin markets top 100 flow only
 python3 scripts/run_local_extract.py --flow coin_markets
 
-# Flow global metrics saja
+# Global metrics flow only
 python3 scripts/run_local_extract.py --flow global
 
-# Flow coin history (sample top 5, 1 hari) untuk validasi cepat
+# Coin history flow (top 5 sample, 1 day) for quick validation
 python3 scripts/run_local_extract.py --flow coin_history --history-top-n 5 --history-days 1
 
-# Jalankan semua flow raw yang tersedia
+# Run all available raw flows
 python3 scripts/run_local_extract.py --flow all
 ```
 
 ### 8.9 Start Airflow
-Setelah setup local extract berhasil, jalankan Airflow:
+After local extract setup is successful, start Airflow:
 
 ```bash
 make airflow-init
@@ -366,13 +366,13 @@ Airflow UI:
 - user: `admin`
 - password: `admin`
 
-Untuk stop:
+To stop:
 
 ```bash
 make down
 ```
 
-Opsional dari Windows host (tanpa shell WSL), gunakan wrapper:
+Optional from Windows host (without WSL shell), use wrappers:
 
 ```bat
 scripts\windows\airflow_init.bat
@@ -385,61 +385,61 @@ scripts\windows\ops_alerting_trigger.bat
 scripts\windows\airflow_down.bat
 ```
 
-Panduan run yang lebih lengkap ada di `docs/how_to_run.md`.
-Runbook operasional (backfill/rerun/failure handling) ada di `docs/runbook.md`.
-Status flow implementasi terkini ada di `docs/pipeline_flow.md`.
+More complete runtime guidance is available in `docs/how_to_run.md`.
+Operational backfill/rerun/failure handling is in `docs/runbook.md`.
+Current implementation status is in `docs/pipeline_flow.md`.
 
 ---
 
-## 9. DAG Utama
+## 9. Main DAGs
 
 ### `reference_coin_list_dag`
-Implementasi saat ini:
+Current implementation:
 - extract `/coins/list`
-- write raw JSON ke `data/raw/coins_list/`
-- load append ke `crypto_raw.raw_coin_list_snapshot`
-- log `pipeline_run` dan `task_run` ke `crypto_ops`
-- run DQ raw + core (structural + business), lalu simpan hasil ke `crypto_ops.dq_check_result`
-- merge/upsert ke `crypto_core.dim_coin`
+- write raw JSON to `data/raw/coins_list/`
+- append-load to `crypto_raw.raw_coin_list_snapshot`
+- log `pipeline_run` and `task_run` to `crypto_ops`
+- run raw + core DQ checks (structural + business) and save to `crypto_ops.dq_check_result`
+- merge/upsert into `crypto_core.dim_coin`
 
 ### `market_snapshot_hourly_dag`
-Implementasi saat ini:
-- extract `/coins/markets` untuk top 100 (`TRACKED_COINS_TOP_N`)
-- write raw JSON ke `data/raw/coins_markets/`
-- load append ke `crypto_raw.raw_coin_markets_snapshot`
-- log `pipeline_run` dan `task_run` ke `crypto_ops`
-- run DQ raw + core + mart (structural + business), lalu simpan hasil ke `crypto_ops.dq_check_result`
-- merge/upsert ke `crypto_core.dim_coin`
-- merge/upsert ke `crypto_core.fact_coin_market_snapshot`
+Current implementation:
+- extract `/coins/markets` for top 100 (`TRACKED_COINS_TOP_N`)
+- write raw JSON to `data/raw/coins_markets/`
+- append-load to `crypto_raw.raw_coin_markets_snapshot`
+- log `pipeline_run` and `task_run` to `crypto_ops`
+- run raw + core + mart DQ checks (structural + business) and save to `crypto_ops.dq_check_result`
+- merge/upsert into `crypto_core.dim_coin`
+- merge/upsert into `crypto_core.fact_coin_market_snapshot`
 - refresh `crypto_mart.mart_top_coins_latest`
-- apply retention cleanup untuk `mart_top_coins_latest` (env-driven)
+- apply retention cleanup for `mart_top_coins_latest` (env-driven)
 
 ### `global_market_hourly_dag`
-Implementasi saat ini:
+Current implementation:
 - extract `/global`
-- write raw JSON ke `data/raw/global/`
-- load append ke `crypto_raw.raw_global_snapshot`
-- log `pipeline_run` dan `task_run` ke `crypto_ops`
-- run DQ raw + core + mart (structural + business), lalu simpan hasil ke `crypto_ops.dq_check_result`
-- merge/upsert ke `crypto_core.fact_global_market`
+- write raw JSON to `data/raw/global/`
+- append-load to `crypto_raw.raw_global_snapshot`
+- log `pipeline_run` and `task_run` to `crypto_ops`
+- run raw + core + mart DQ checks (structural + business) and save to `crypto_ops.dq_check_result`
+- merge/upsert into `crypto_core.fact_global_market`
 - refresh `crypto_mart.mart_market_summary_daily`
-- apply retention cleanup untuk `mart_market_summary_daily` (env-driven)
+- apply retention cleanup for `mart_market_summary_daily` (env-driven)
 
 ### `coin_history_daily_dag`
-Implementasi saat ini:
-- extract `/coins/{id}/market_chart` untuk tracked coins (default: `TRACKED_COINS_TOP_N`)
-- write raw JSON per coin ke `data/raw/coin_market_chart/`
-- load append ke `crypto_raw.raw_coin_market_chart_point`
-- log `pipeline_run` dan `task_run` ke `crypto_ops`
-- run DQ raw + core + mart (structural + business), lalu simpan hasil ke `crypto_ops.dq_check_result`
-- merge/upsert ke `crypto_core.fact_coin_price_history`
+Current implementation:
+- extract `/coins/{id}/market_chart` for tracked coins (default: `TRACKED_COINS_TOP_N`)
+- write raw JSON per coin to `data/raw/coin_market_chart/`
+- append-load to `crypto_raw.raw_coin_market_chart_point`
+- log `pipeline_run` and `task_run` to `crypto_ops`
+- run raw + core + mart DQ checks (structural + business) and save to `crypto_ops.dq_check_result`
+- merge/upsert into `crypto_core.fact_coin_price_history`
 - refresh `crypto_mart.mart_coin_daily_metrics`
 - refresh `crypto_mart.mart_coin_rolling_metrics`
-- apply retention cleanup untuk `mart_coin_daily_metrics` dan `mart_coin_rolling_metrics` (env-driven)
+- apply retention cleanup for `mart_coin_daily_metrics` and `mart_coin_rolling_metrics` (env-driven)
 
-Catatan:
-- Merge core menggunakan pola `INSERT ... ON DUPLICATE KEY UPDATE`, jadi `source_batch_id` pada tabel fact bisa tertimpa oleh run yang lebih baru di grain yang sama.
-- Flow `coin_history` mendukung tuning throttling/retry via env atau `dag_run.conf`:
+Notes:
+- Core merge uses `INSERT ... ON DUPLICATE KEY UPDATE`, so `source_batch_id` in fact tables can be overwritten by newer runs on the same grain.
+- The `coin_history` flow supports throttling/retry tuning via env or `dag_run.conf`:
   - `batch_size`
   - `request_pause_seconds`
   - `batch_pause_seconds`
@@ -447,35 +447,35 @@ Catatan:
   - `client_backoff_seconds`
 
 ### `ops_alerting_dag`
-Implementasi saat ini:
-- schedule setiap 15 menit
-- baca `crypto_ops.pipeline_run` dan `crypto_ops.dq_check_result`
-- fail task jika ada `pipeline_run` failed atau DQ fail pada lookback window
-- konfigurasi via `OPS_ALERT_*`
+Current implementation:
+- schedule every 15 minutes
+- read `crypto_ops.pipeline_run` and `crypto_ops.dq_check_result`
+- fail task when there is a failed `pipeline_run` or failed DQ in the lookback window
+- configurable via `OPS_ALERT_*`
 
 ---
 
 ## 10. Data Model Overview
 
-### Database
+### Databases
 - `crypto_raw`
 - `crypto_core`
 - `crypto_mart`
 - `crypto_ops`
 
-### Tabel core utama
+### Main core tables
 - `dim_coin`
 - `fact_coin_market_snapshot`
 - `fact_coin_price_history`
 - `fact_global_market`
 
-### Tabel mart utama
+### Main mart tables
 - `mart_coin_daily_metrics`
 - `mart_coin_rolling_metrics`
 - `mart_top_coins_latest`
 - `mart_market_summary_daily`
 
-### Tabel ops utama
+### Main ops tables
 - `pipeline_run`
 - `task_run`
 - `api_request_log`
@@ -488,74 +488,74 @@ Implementasi saat ini:
 ## 11. Data Quality
 
 Basic quality controls:
-- key columns tidak boleh null
-- metric numerik harus valid
+- key columns must not be null
+- numeric metrics must be valid
 - duplicate grain checks
 - row count sanity checks
-- quarantine flow untuk record bermasalah jika perlu
-- business rule checks layer core/mart (contoh: rank top coin harus positif, persentase market cap BTC/ETH berada di range 0..100, dan rolling metric tidak boleh negatif)
+- quarantine flow for problematic records when needed
+- core/mart business rule checks (for example: top coin rank must be positive, BTC/ETH market cap percentage must be in range 0..100, and rolling metrics must not be negative)
 
-Prinsipnya: lebih baik log error dengan jelas daripada diam-diam skip tanpa jejak.
+Principle: clear failure signals are better than silently skipping data issues.
 
 ---
 
 ## 12. Observability
 
-Pipeline mencatat:
+The pipeline records:
 - run metadata
 - request metadata
 - row counts
 - retry counts
 - failures
-- hasil DQ
+- DQ results
 
-Logs disimpan di:
+Logs are stored in:
 - file/application logs
 - MySQL ops tables
 
-Ini penting supaya proyekmu terlihat seperti sistem yang dirancang, bukan script yang beruntung.
+This helps the project look and behave like a designed system, not a lucky script.
 
 ---
 
-## 13. Workflow Development
+## 13. Development Workflow
 
-Cara kerja yang disarankan:
-1. mulai dari `README.md`, `docs/final_architecture.md`, dan `docs/runbook.md`
-2. kerjakan perubahan kecil, aman, dan mudah direview
-3. validasi perubahan dengan script/test sebelum commit
-4. pisahkan perubahan fungsional dari perubahan dokumentasi bila memungkinkan
-5. gunakan akses database langsung hanya untuk inspeksi/validasi, bukan sebagai dependency runtime
+Recommended way of working:
+1. start from `README.md`, `docs/final_architecture.md`, and `docs/runbook.md`
+2. implement small, safe, reviewable changes
+3. validate changes with scripts/tests before committing
+4. separate functional changes from documentation changes when possible
+5. use direct database access for inspection/validation only, not as runtime dependency
 
 ---
 
-## 14. Mengapa Proyek Ini Relevan untuk Portfolio
+## 14. Why This Project Is Portfolio-Relevant
 
-Proyek ini menunjukkan kesiapan untuk pekerjaan data engineering, terutama dalam:
+This project demonstrates readiness for data engineering roles, especially in:
 - ingestion pipeline design
 - workflow orchestration
-- SQL dan data modeling
+- SQL and data modeling
 - local environment discipline
-- debugging dan observability
+- debugging and observability
 - secure configuration handling
 
-Ini jauh lebih kuat daripada notebook atau script tunggal.
+This is much stronger than a single notebook or script.
 
 ---
 
 ## 15. Future Enhancements
 
-Kemungkinan v2:
-- dbt migration setelah warehouse berganti
+Potential v2 improvements:
+- dbt migration after warehouse transition
 - dashboard layer
 - alerting
 - cloud deployment
 - CI/CD
-- lebih banyak source system
-- data quality framework yang lebih kuat
+- additional source systems
+- stronger data quality framework
 
 ---
 
-## 16. Lisensi dan Penggunaan
+## 16. License and Usage
 
-Repository ini ditujukan untuk pembelajaran, demonstrasi portfolio, dan latihan engineering.
-Jangan commit secret atau credential sensitif.
+This repository is intended for learning, portfolio demonstration, and engineering practice.
+Do not commit secrets or sensitive credentials.
